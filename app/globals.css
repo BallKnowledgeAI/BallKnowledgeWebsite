@@ -26,6 +26,12 @@
   --blue-glow-dim: rgba(59,130,246,0.5);
   --danger: #F87171;
   --danger-dim: rgba(248,113,113,0.12);
+  --email-bg: rgba(10,16,32,0.88);
+  --email-text: #F0F6FF;
+  --email-placeholder: rgba(138,154,181,0.95);
+  --email-button-bg: linear-gradient(135deg, #3BA7F0 0%, #1F3C88 100%);
+  --email-button-success: #123A2A;
+  --email-button-text: #FFFFFF;
 }
 
 :root[data-theme="light"] {
@@ -50,6 +56,12 @@
   --dot-b: rgba(100,120,160,0.5);
   --blue-glow: rgba(31,60,136,1);
   --blue-glow-dim: rgba(31,60,136,0.5);
+  --email-bg: rgba(255,255,255,0.94);
+  --email-text: #08101E;
+  --email-placeholder: rgba(74,85,104,0.82);
+  --email-button-bg: linear-gradient(135deg, #1F3C88 0%, #3BA7F0 100%);
+  --email-button-success: #DFF7EA;
+  --email-button-text: #FFFFFF;
 }
 
 @layer base {
@@ -219,6 +231,11 @@
   .player-dot.dragging {
     animation: none !important;
     cursor: grabbing !important;
+  }
+
+  .email-access-input::placeholder {
+    color: var(--email-placeholder);
+    opacity: 1;
   }
 
   @keyframes decoded-glow {

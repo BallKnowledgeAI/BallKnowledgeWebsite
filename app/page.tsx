@@ -11,7 +11,7 @@ const BallKnowledge = () => {
   const [emailMessage, setEmailMessage] = useState('')
   const [emailSuccess, setEmailSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [lastAutoSubmittedEmail, setLastAutoSubmittedEmail] = useState('')
+  const [submittedEmails, setSubmittedEmails] = useState<string[]>([])
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const [draggedDot, setDraggedDot] = useState<string | null>(null)
   const [dotOffsets, setDotOffsets] = useState<{ [key: string]: { x: number; y: number } }>({})
@@ -38,6 +38,20 @@ const BallKnowledge = () => {
       document.documentElement.style.colorScheme = 'dark'
     }
     setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    const savedEmails = localStorage.getItem('bk-waitlist-emails')
+    if (!savedEmails) return
+
+    try {
+      const parsed = JSON.parse(savedEmails)
+      if (Array.isArray(parsed)) {
+        setSubmittedEmails(parsed.filter((item): item is string => typeof item === 'string'))
+      }
+    } catch {
+      localStorage.removeItem('bk-waitlist-emails')
+    }
   }, [])
 
   useEffect(() => {
@@ -97,13 +111,19 @@ const BallKnowledge = () => {
 
       const result = await response.json()
 
-      if (!response.ok) {
+      if (!response.ok || result?.emailSent === false) {
         setEmailError(result?.error || result?.message || 'The play stalled. Try again.')
       } else {
+        const normalizedEmail = emailToSubmit.toLowerCase().trim()
+        setSubmittedEmails((prev) => {
+          if (prev.includes(normalizedEmail)) return prev
+          const next = [...prev, normalizedEmail]
+          localStorage.setItem('bk-waitlist-emails', JSON.stringify(next))
+          return next
+        })
         setEmailSuccess(true)
         setEmail('')
-        setLastAutoSubmittedEmail(emailToSubmit.toLowerCase().trim())
-        setEmailMessage(result?.message || 'Goal! You’ve been added to the prototype testers roster. Check your inbox for kickoff details.')
+        setEmailMessage(result?.emailSent === false ? 'Email did not send.' : result?.message || "Goal! You're on the squad. Check your inbox.")
         setTimeout(() => setEmailSuccess(false), 3000)
       }
     } catch (error) {
@@ -122,39 +142,27 @@ const BallKnowledge = () => {
     setEmailMessage('')
 
     if (!trimmedEmail) {
-      setEmailError('Red card! No pass received — enter your email before you take the shot.')
+      setEmailError('Red card! Enter your email first.')
       return
     }
 
     if (!trimmedEmail.includes('@')) {
-      setEmailError('Foul! That address is missing an @ — it can’t score without it.')
+      setEmailError('Foul! That email is missing an @.')
       return
     }
 
     if (!validateEmail(trimmedEmail)) {
-      setEmailError('Offside! That email is off-target — deliver a valid address.')
+      setEmailError('Offside! Enter a valid email address.')
+      return
+    }
+
+    if (submittedEmails.includes(trimmedEmail)) {
+      setEmailError('Foul! That email is already on the roster.')
       return
     }
 
     await submitEmail(trimmedEmail)
   }
-
-  useEffect(() => {
-    const trimmedEmail = email.toLowerCase().trim()
-    if (
-      trimmedEmail &&
-      validateEmail(trimmedEmail) &&
-      !isSubmitting &&
-      !emailSuccess &&
-      trimmedEmail !== lastAutoSubmittedEmail
-    ) {
-      const timer = window.setTimeout(() => {
-        submitEmail(trimmedEmail)
-      }, 800)
-
-      return () => window.clearTimeout(timer)
-    }
-  }, [email, emailSuccess, isSubmitting, lastAutoSubmittedEmail])
 
   const handleDotPointerDown = (dotId: string, e: React.PointerEvent<SVGCircleElement>) => {
     e.preventDefault()
@@ -880,11 +888,13 @@ const BallKnowledge = () => {
                 }}
               >
                 <input
+                  className="email-access-input"
                   type="email"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value)
                     setEmailError('')
+                    setEmailMessage('')
                   }}
                   placeholder="Enter your email"
                   disabled={emailSuccess || isSubmitting}
@@ -892,17 +902,17 @@ const BallKnowledge = () => {
                     flex: 1,
                     height: '52px',
                     padding: '0 20px',
-                    background: 'var(--surface)',
-                    borderTop: emailError && !emailError.includes('Already') ? '1px solid var(--danger)' : '1px solid var(--border)',
-                  borderBottom: emailError && !emailError.includes('Already') ? '1px solid var(--danger)' : '1px solid var(--border)',
-                  borderLeft: emailError && !emailError.includes('Already') ? '1px solid var(--danger)' : '1px solid var(--border)',
+                    background: emailSuccess ? 'var(--green-dim)' : 'var(--email-bg)',
+                    borderTop: emailError ? '1px solid var(--danger)' : '1px solid var(--border)',
+                  borderBottom: emailError ? '1px solid var(--danger)' : '1px solid var(--border)',
+                  borderLeft: emailError ? '1px solid var(--danger)' : '1px solid var(--border)',
                     borderRight: 'none',
                     borderRadius: '28px 0 0 28px',
                     fontFamily: 'var(--font-dm-sans)',
                     fontSize: '14px',
-                    color: 'var(--text)',
+                    color: 'var(--email-text)',
                     outline: 'none',
-                    transition: 'all 300ms ease',
+                    transition: 'background 300ms ease, border-color 300ms ease, box-shadow 300ms ease, color 300ms ease, opacity 300ms ease',
                     opacity: emailSuccess ? 0.6 : 1,
                     cursor: emailSuccess ? 'default' : 'text',
                   }}
@@ -932,13 +942,13 @@ const BallKnowledge = () => {
                     minWidth: '150px',
                     height: '52px',
                     padding: '0 24px',
-                    background: emailSuccess ? 'var(--deep)' : `linear-gradient(135deg, var(--primary) 0%, var(--deep) 100%)`,
+                    background: emailSuccess ? 'var(--email-button-success)' : 'var(--email-button-bg)',
                     border: 'none',
                     borderRadius: '0 28px 28px 0',
                     fontFamily: 'var(--font-dm-sans)',
                     fontWeight: 600,
                     fontSize: '14px',
-                    color: 'var(--on-primary)',
+                    color: emailSuccess ? 'var(--green)' : 'var(--email-button-text)',
                     cursor: emailSuccess || isSubmitting ? 'default' : 'pointer',
                     letterSpacing: '0.03em',
                     transition: 'all 300ms ease',
