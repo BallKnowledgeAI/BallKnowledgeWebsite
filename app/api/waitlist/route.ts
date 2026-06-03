@@ -6,7 +6,8 @@ import nodemailer from 'nodemailer'
 export const runtime = 'nodejs'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const supabaseKey = supabaseServiceRoleKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
 const emailFromName = process.env.EMAIL_FROM_NAME || 'Ball Knowledge'
@@ -72,6 +73,26 @@ function readableEmailError(reason?: string) {
   }
 
   return reason
+}
+
+function readableWaitlistError(error: { code?: string; message?: string }) {
+  const message = error.message?.toLowerCase() || ''
+
+  if (error.code === '42P01' || message.includes('relation') || message.includes('does not exist')) {
+    return 'VAR check failed! The waitlist table is missing.'
+  }
+
+  if (error.code === '42501' || message.includes('row-level security') || message.includes('permission denied')) {
+    return supabaseServiceRoleKey
+      ? 'VAR check failed! Supabase blocked the roster insert.'
+      : 'VAR check failed! Add SUPABASE_SERVICE_ROLE_KEY in Vercel.'
+  }
+
+  if (message.includes('violates row-level security policy')) {
+    return 'VAR check failed! Add SUPABASE_SERVICE_ROLE_KEY in Vercel.'
+  }
+
+  return 'Unable to add your email right now.'
 }
 
 async function sendWithGmailSmtp(recipientEmail: string): Promise<EmailResult> {
@@ -163,7 +184,7 @@ export async function POST(request: Request) {
     }
 
     console.error('Waitlist insert error:', error)
-    return NextResponse.json({ error: 'Unable to add your email right now.' }, { status: 500 })
+    return NextResponse.json({ error: readableWaitlistError(error) }, { status: 500 })
   }
 
   const emailResult = await sendAndLogConfirmation(email)
