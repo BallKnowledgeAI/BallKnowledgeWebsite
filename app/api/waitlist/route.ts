@@ -154,23 +154,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Offside! That email domain can’t receive mail.' }, { status: 400 })
   }
 
-  const { data: existing, error: selectError } = await supabase
-    .from('waitlist')
-    .select('id')
-    .eq('email', email)
-    .limit(1)
-    .maybeSingle()
-
-  if (selectError) {
-    console.error('Waitlist lookup error:', selectError)
-    return NextResponse.json({ error: 'Unable to check the roster right now.' }, { status: 500 })
-  }
-
-  if (existing) {
-    await logEmailSend(email, 'skipped', undefined, 'duplicate email')
-    return NextResponse.json({ error: 'Foul! That email is already on the roster.' }, { status: 409 })
-  }
-
   const { error } = await supabase.from('waitlist').insert({ email, source })
 
   if (error) {
