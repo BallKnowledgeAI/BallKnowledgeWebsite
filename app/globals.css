@@ -33,6 +33,7 @@
   --email-button-success: rgba(18,58,42,0.5);
   --email-button-text: #FFFFFF;
   --brand-logo: url('/ballknowledge-mark-dark.png');
+  --brand-logo-scale: 70%;
 }
 
 :root[data-theme="light"] {
@@ -64,6 +65,7 @@
   --email-button-success: rgba(223,247,234,0.5);
   --email-button-text: #FFFFFF;
   --brand-logo: url('/ballknowledge-mark-light.png');
+  --brand-logo-scale: 70%;
 }
 
 @layer base {
@@ -1686,7 +1688,7 @@
   height: 42px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: var(--brand-logo) center / contain no-repeat;
+  background: transparent var(--brand-logo) center / var(--brand-logo-scale) no-repeat;
 }
 
 .home-brand {
