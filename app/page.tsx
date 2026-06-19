@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Sun, Moon, Github, Linkedin, Eye, Brain, Zap } from 'lucide-react'
+import Link from 'next/link'
+import { Sun, Moon, Instagram, Linkedin, Twitter, Eye, Brain, Zap } from 'lucide-react'
 
 const BallKnowledge = () => {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [mounted, setMounted] = useState(false)
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState('')
   const [emailMessage, setEmailMessage] = useState('')
@@ -37,7 +37,6 @@ const BallKnowledge = () => {
       document.documentElement.classList.add('dark')
       document.documentElement.style.colorScheme = 'dark'
     }
-    setMounted(true)
   }, [])
 
   useEffect(() => {
@@ -80,6 +79,7 @@ const BallKnowledge = () => {
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.classList.add('theme-switching')
     setTheme(newTheme)
     localStorage.setItem('bk-theme', newTheme)
     // Update both attribute and `.dark` class so all styles (CSS variables and inline theme checks) update together
@@ -91,6 +91,7 @@ const BallKnowledge = () => {
       document.documentElement.classList.add('dark')
       document.documentElement.style.colorScheme = 'dark'
     }
+    requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('theme-switching')))
   }
 
   const validateEmail = (email: string) => {
@@ -242,8 +243,6 @@ const BallKnowledge = () => {
     document.addEventListener('mousemove', handlePointerMove, { passive: false })
     document.addEventListener('mouseup', handlePointerUp)
   }
-
-  if (!mounted) return null
 
   // Pitch formations
   const teamA = [
@@ -690,32 +689,20 @@ const BallKnowledge = () => {
           }}
         >
           {/* Logo + Wordmark */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Football with neural network SVG */}
-            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" style={{ flexShrink: 0 }}>
-              <circle cx="13" cy="13" r="12" stroke="var(--primary)" strokeWidth="1.5" fill="var(--primary-dim)" />
-              <polygon points="13,4 17,9 15,15 11,15 9,9" fill="none" stroke="var(--primary)" strokeWidth="1" />
-              <circle cx="13" cy="4" r="1.8" fill="var(--primary)" />
-              <circle cx="17" cy="9" r="1.8" fill="var(--primary)" />
-              <circle cx="15" cy="15" r="1.8" fill="var(--green)" />
-              <circle cx="11" cy="15" r="1.8" fill="var(--green)" />
-              <circle cx="9" cy="9" r="1.8" fill="var(--primary)" />
-              <line x1="13" y1="4" x2="17" y2="9" stroke="var(--primary)" strokeWidth="0.8" opacity="0.6" />
-              <line x1="17" y1="9" x2="15" y2="15" stroke="var(--primary)" strokeWidth="0.8" opacity="0.6" />
-              <line x1="15" y1="15" x2="11" y2="15" stroke="var(--green)" strokeWidth="0.8" opacity="0.6" />
-              <line x1="11" y1="15" x2="9" y2="9" stroke="var(--primary)" strokeWidth="0.8" opacity="0.6" />
-              <line x1="9" y1="9" x2="13" y2="4" stroke="var(--primary)" strokeWidth="0.8" opacity="0.6" />
-            </svg>
+          <Link className="site-brand home-brand" href="/" aria-label="Ball Knowledge home">
+            <i className="brand-logo" aria-hidden="true" />
+            <span><b>Ball</b>Knowledge</span>
+          </Link>
 
-            {/* Wordmark */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0px', fontFamily: 'var(--font-dm-sans)', fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px' }}>
-              <span style={{ color: 'var(--deep)' }}>Ball</span>
-              <span style={{ color: 'var(--primary)' }}>Knowledge</span>
-            </div>
-          </div>
+          <div className="home-header-actions">
+            <nav className="home-nav" aria-label="Main navigation">
+              <Link className="active" href="/">Home</Link>
+              <Link href="/features">Features</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
 
-          {/* Theme Toggle */}
-          <button
+            {/* Theme Toggle */}
+            <button
             onClick={toggleTheme}
             style={{
               width: '40px',
@@ -743,9 +730,10 @@ const BallKnowledge = () => {
               e.currentTarget.style.background = 'var(--surface)'
               e.currentTarget.style.borderColor = 'var(--border)'
             }}
-          >
-            {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
+            >
+              {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+          </div>
         </div>
 
         {/* ZONE 2: Main Content */}
@@ -1145,8 +1133,9 @@ const BallKnowledge = () => {
           }}
         >
           {[
-            { icon: Github, href: 'https://github.com' },
-            { icon: Linkedin, href: 'https://linkedin.com' },
+            { icon: Linkedin, href: 'https://www.linkedin.com/company/ballknowledge-ai/', label: 'LinkedIn' },
+            { icon: Twitter, href: 'https://x.com/AIBallKnowledge', label: 'X' },
+            { icon: Instagram, href: 'https://www.instagram.com/ballknowledge.ai?igsh=b2V0ZHZuMXFmNXlw', label: 'Instagram' },
           ].map((link, i) => {
             const Icon = link.icon
             return (
@@ -1155,6 +1144,8 @@ const BallKnowledge = () => {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={link.label}
+                title={link.label}
                 style={{
                   width: '38px',
                   height: '38px',
