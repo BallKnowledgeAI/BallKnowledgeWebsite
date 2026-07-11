@@ -697,6 +697,7 @@ const BallKnowledge = () => {
           <div className="home-header-actions">
             <nav className="home-nav" aria-label="Main navigation">
               <Link className="active" href="/">Home</Link>
+              <Link href="/about">About</Link>
               <Link href="/features">Features</Link>
               <Link href="/contact">Contact</Link>
             </nav>

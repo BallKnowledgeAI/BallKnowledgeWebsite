@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  --reveal-duration: 700ms;
+  --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --bg: #04080F;
   --surface: #0A1020;
   --elevated: #101828;
@@ -230,7 +232,7 @@
     transition: fill 300ms ease, filter 300ms ease;
   }
 
-  /* REMOVED .player-dot:hover green override — hover colors handled per-team in JSX */
+  /* REMOVED .player-dot:hover green override, hover colors handled per-team in JSX */
 
   .player-dot.dragging {
     animation: none !important;
@@ -2245,5 +2247,682 @@ html.theme-switching *::after {
   .site-footer {
     width: calc(100% - 28px);
     padding: 14px 16px;
+  }
+}
+
+@keyframes scrollDot {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.about-scroll-dot {
+  animation: scrollDot 1.5s ease infinite;
+}
+
+.about-pitch-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: aboutPitchDraw 1.8s var(--reveal-ease) forwards;
+}
+
+.about-pitch-draw.draw-circle { animation-delay: 0ms; }
+.about-pitch-draw.draw-half { animation-delay: 260ms; }
+.about-pitch-draw.draw-box { animation-delay: 560ms; }
+.about-pitch-draw.draw-corner { animation-delay: 920ms; }
+.about-pitch-draw.draw-outline { animation-delay: 1180ms; }
+
+.about-pulse-dot {
+  animation: badge-pulse-improved 2s ease-in-out infinite;
+}
+
+.about-signal-route {
+  animation: aboutRouteFlow 8s linear infinite;
+}
+
+.about-signal-route.route-two {
+  animation-duration: 10s;
+  animation-direction: reverse;
+}
+
+.about-data-packet {
+  animation: aboutDataPacket 7s linear infinite;
+}
+
+.about-radar-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.about-radar-sweep {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 50%;
+  animation: aboutRadarRotate 6s linear infinite;
+  opacity: 0.9;
+}
+
+.about-radar-sweep.trail {
+  opacity: 0.3;
+  animation-delay: -400ms;
+}
+
+.about-radar-node {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: aboutNodePulse 2.4s ease-in-out infinite;
+}
+
+.about-radar-node::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.35;
+}
+
+.about-radar-node.node-a {
+  left: 41%;
+  top: 44%;
+  color: var(--primary);
+  animation-delay: 800ms;
+}
+
+.about-radar-node.node-b {
+  left: 58%;
+  top: 37%;
+  color: var(--green);
+  animation-delay: 1100ms;
+}
+
+.about-radar-link {
+  position: absolute;
+  left: 42%;
+  top: 45%;
+  width: 18%;
+  border-top: 1px dashed var(--primary);
+  opacity: 0.22;
+  transform: rotate(-19deg);
+}
+
+.about-price-ticker {
+  width: 80px;
+  height: 40px;
+  display: flex;
+  align-items: end;
+  gap: 2px;
+}
+
+.about-price-ticker span {
+  width: 6px;
+  display: block;
+  transform-origin: bottom center;
+  transform: scaleY(0);
+  transition: transform 600ms var(--reveal-ease);
+}
+
+.about-price-ticker span:nth-child(-n + 2) {
+  background: rgba(231,76,60,0.6);
+}
+
+.about-price-ticker span:nth-child(n + 3):nth-child(-n + 4) {
+  background: rgba(243,156,18,0.4);
+}
+
+.about-price-ticker span:nth-child(n + 5) {
+  background: rgba(59,167,240,0.15);
+}
+
+.about-price-ticker span.collapse:nth-child(n + 5) {
+  animation: aboutTickerCollapse 400ms ease 1000ms forwards;
+}
+
+.about-formation-morph {
+  width: min(620px, calc(100% - 40px));
+  min-height: 520px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 48% 50%, color-mix(in srgb, var(--green) 10%, transparent), transparent 36%),
+    linear-gradient(140deg, color-mix(in srgb, var(--primary-dim) 40%, transparent), transparent 65%),
+    color-mix(in srgb, var(--surface) 55%, transparent);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  box-shadow: inset 0 0 80px color-mix(in srgb, var(--primary) 5%, transparent), 0 24px 80px color-mix(in srgb, var(--bg) 35%, transparent);
+}
+
+.about-formation-morph > span {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  color: var(--primary);
+  font-family: var(--font-barlow-condensed);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.about-formation-morph svg {
+  width: 82%;
+  height: 360px;
+  overflow: visible;
+}
+
+.about-formation-morph line {
+  transition: x1 800ms var(--reveal-ease), y1 800ms var(--reveal-ease), x2 800ms var(--reveal-ease), y2 800ms var(--reveal-ease);
+}
+
+.about-formation-morph circle {
+  transition: cx 800ms var(--reveal-ease), cy 800ms var(--reveal-ease), filter 220ms ease;
+}
+
+.about-formation-morph .about-key-player {
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.about-formation-morph strong {
+  position: absolute;
+  left: 24px;
+  bottom: 22px;
+  color: var(--green);
+  font-family: var(--font-barlow-condensed);
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.about-origin-layout {
+  min-height: 100vh;
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.72fr);
+  align-items: center;
+  gap: 52px;
+}
+
+.about-diff-panel {
+  position: relative;
+  min-height: 330px;
+  padding: 24px;
+  border: 1px solid rgba(59,167,240,0.15);
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0 2px, transparent 2px 4px),
+    rgba(4,8,20,0.9);
+  color: rgba(138,154,181,0.8);
+  font-family: Consolas, Monaco, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow: hidden;
+  box-shadow: 0 24px 70px color-mix(in srgb, var(--bg) 40%, transparent);
+}
+
+.about-diff-title {
+  margin-bottom: 14px;
+  color: rgba(138,154,181,0.5);
+  font-size: 10px;
+}
+
+.about-diff-line {
+  min-height: 22px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+}
+
+.about-diff-line.bad {
+  color: rgba(231,76,60,0.7);
+  background: rgba(231,76,60,0.04);
+}
+
+.about-diff-line.good,
+.about-diff-line.terminal {
+  color: rgba(46,204,113,0.8);
+  background: rgba(46,204,113,0.04);
+}
+
+.about-diff-cursor::after {
+  content: '|';
+  animation: aboutCursorCycle 1.1s steps(1) infinite;
+}
+
+.about-access-word {
+  position: relative;
+  display: inline-block;
+}
+
+.about-access-word::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: aboutUnderlineDraw 600ms ease 600ms forwards;
+}
+
+@keyframes aboutRouteFlow {
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+@keyframes aboutPitchDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes aboutRadarRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes aboutNodePulse {
+  50% {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 14px currentColor);
+  }
+}
+
+@keyframes aboutTickerCollapse {
+  to {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes aboutUnderlineDraw {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes aboutDataPacket {
+  to {
+    stroke-dashoffset: -88;
+  }
+}
+
+.about-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.about-hero-signal {
+  position: absolute;
+  z-index: 1;
+  right: max(34px, calc((100vw - 1120px) / 2));
+  bottom: 72px;
+  width: min(360px, 28vw);
+  opacity: 0.9;
+}
+
+.about-hero-signal .hero-signal {
+  width: 100%;
+  min-height: 240px;
+}
+
+.about-access-formation {
+  position: absolute;
+  z-index: 0;
+  right: -150px;
+  top: 50%;
+  width: 420px;
+  transform: translateY(-50%) rotate(-6deg);
+  opacity: 0.55;
+}
+
+.about-tactical-panel-wrap {
+  position: absolute;
+  z-index: 2;
+  width: min(560px, calc(100% - 48px));
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.about-tactical-panel-wrap .tactical-panel {
+  min-height: 460px;
+}
+
+.about-timeline {
+  position: fixed;
+  z-index: 40;
+  left: 22px;
+  top: 88px;
+  bottom: 38px;
+  width: 12px;
+  pointer-events: none;
+}
+
+.about-timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.about-timeline-line {
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--primary);
+  transform-origin: top center;
+  opacity: 0.55;
+}
+
+.about-timeline-traveler,
+.about-timeline-dot {
+  position: absolute;
+  left: 2px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.about-timeline-traveler {
+  width: 7px;
+  height: 7px;
+  box-shadow: 0 0 14px var(--primary);
+}
+
+.about-timeline-dot {
+  width: 5px;
+  height: 5px;
+  opacity: 0.65;
+  animation: aboutTimelineDot 700ms var(--reveal-ease) both;
+}
+
+.about-role-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 28px;
+  height: 28px;
+  color: var(--primary);
+  opacity: 0.22;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  pointer-events: none;
+}
+
+.about-value-texture {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 90px;
+  height: 90px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.about-value-texture.texture-1 { color: var(--primary); }
+.about-value-texture.texture-2 { color: var(--green); }
+.about-value-texture.texture-3 { color: var(--muted); }
+
+.about-spark {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  opacity: 0.65;
+  animation: aboutSparkPulse 2s ease-in-out infinite;
+}
+
+.about-terminal-cursor::after {
+  content: '|';
+  animation: aboutCursorCycle 1.8s steps(1) infinite;
+}
+
+.about-primary-cta {
+  position: relative;
+  overflow: hidden;
+}
+
+.about-primary-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  transform: translateX(-110%);
+  pointer-events: none;
+}
+
+.about-primary-cta:hover::after {
+  animation: aboutCtaShimmer 600ms ease;
+}
+
+.about-clock-flash {
+  animation: aboutClockFlash 200ms ease;
+}
+
+.about-clock-label {
+  opacity: 0;
+  animation: aboutClockLabel 400ms var(--reveal-ease) forwards;
+}
+
+.about-clock-label line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: aboutPitchDraw 400ms var(--reveal-ease) forwards;
+}
+
+@keyframes aboutTimelineDot {
+  from { transform: translateY(-50%) scale(0); }
+  to { transform: translateY(-50%) scale(1); }
+}
+
+@keyframes aboutSparkPulse {
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes aboutCursorCycle {
+  0%, 32% { content: '_'; }
+  33%, 65% { content: '|'; }
+  66%, 100% { content: '#'; }
+}
+
+@keyframes aboutCtaShimmer {
+  to {
+    transform: translateX(110%);
+  }
+}
+
+@keyframes aboutClockFlash {
+  50% {
+    filter: drop-shadow(0 0 10px var(--danger));
+  }
+}
+
+@keyframes aboutClockLabel {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero-section,
+  .about-full-section,
+  .about-team-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .about-hero-section h1 {
+    font-size: clamp(40px, 12vw, 120px) !important;
+  }
+
+  .about-split-section {
+    grid-template-columns: 1fr !important;
+  }
+
+  .about-split-vision .about-visual-panel {
+    order: -1;
+  }
+
+  .about-content-panel,
+  .about-visual-panel {
+    min-height: auto !important;
+    padding: 72px 20px !important;
+  }
+
+  .about-stat-row {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    text-align: center !important;
+  }
+
+  .about-stat-row > div:first-child {
+    font-size: clamp(48px, 12vw, 80px) !important;
+  }
+
+  .about-access-card {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 0 auto;
+  }
+
+  .about-team-grid,
+  .about-value-grid,
+  .about-cta-actions {
+    flex-direction: column !important;
+  }
+
+  .about-value-offset {
+    transform: none !important;
+  }
+
+  .about-value-card {
+    border-left: 0 !important;
+    border-top-width: 4px !important;
+    border-top-style: solid !important;
+  }
+
+  .about-value-reveal:nth-child(1) .about-value-card {
+    border-top-color: #3BA7F0 !important;
+  }
+
+  .about-value-reveal:nth-child(2) .about-value-card {
+    border-top-color: #2ECC71 !important;
+  }
+
+  :root[data-theme="dark"] .about-value-reveal:nth-child(3) .about-value-card {
+    border-top-color: rgba(240,246,255,0.15) !important;
+  }
+
+  :root[data-theme="light"] .about-value-reveal:nth-child(3) .about-value-card {
+    border-top-color: rgba(10,15,30,0.12) !important;
+  }
+
+  .about-why-grid {
+    grid-template-columns: 1fr !important;
+    gap: 30px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .about-nav-actions {
+    gap: 8px;
+    overflow-x: auto;
+    padding-left: 12px;
+  }
+
+  .about-waitlist-link {
+    display: none !important;
+  }
+
+  .about-tactical-signal {
+    width: min(360px, calc(100% - 40px)) !important;
+    right: 20px !important;
+    bottom: 34px !important;
+    opacity: 0.58;
+  }
+
+  .about-access-gap-graphic {
+    display: none;
+  }
+
+  .about-hero-signal {
+    display: none;
+  }
+
+  .about-access-formation {
+    display: none;
+  }
+
+  .about-tactical-panel-wrap {
+    position: relative;
+    width: 100%;
+    left: auto;
+    top: auto;
+    transform: none;
+  }
+
+  .about-tactical-panel-wrap .tactical-panel {
+    min-height: 420px;
+  }
+
+  .about-origin-layout {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-top: 58px;
+  }
+
+  .about-formation-morph {
+    width: 100%;
+    min-height: 420px;
+  }
+
+  .about-formation-morph svg {
+    height: 300px;
+  }
+
+  .about-timeline {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .about-tactical-signal {
+    display: none;
   }
 }
