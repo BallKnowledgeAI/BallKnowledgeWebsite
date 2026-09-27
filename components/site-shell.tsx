@@ -1,44 +1,62 @@
 'use client'
 
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { Menu, Moon, Sun, X } from 'lucide-react'
+import { useEffect } from 'react'
+import { HomeFooter, HomeHeader } from './home/home-experience'
 
-const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/features', label: 'Features' },
-  { href: '/contact', label: 'Contact' },
-]
+type SiteShellProps = {
+  children: React.ReactNode
+  currentPath: string
+  /** Pages that manage their own full-bleed sections skip the boxed content well. */
+  fullBleed?: boolean
+}
 
-export function SiteShell({ children, currentPath }: { children: React.ReactNode; currentPath: string }) {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [menuOpen, setMenuOpen] = useState(false)
-
+/**
+ * Wraps every non-home page in the exact same header/footer the homepage
+ * uses (HomeHeader/HomeFooter from components/home/home-experience.tsx),
+ * so navigating between pages never swaps to a differently-laid-out header —
+ * that mismatch was what looked like the header "shifting" on click.
+ */
+export function SiteShell({ children, currentPath, fullBleed = false }: SiteShellProps) {
+  // Reveal-on-scroll for `.reveal` and `[data-reveal]` — covers both this
+  // repo's older marketing pages and the matchday design system's own markers.
   useEffect(() => {
-    const savedTheme = localStorage.getItem('bk-theme')
-    const nextTheme = savedTheme === 'light' ? 'light' : 'dark'
-    setTheme(nextTheme)
-    document.documentElement.setAttribute('data-theme', nextTheme)
-    document.documentElement.classList.toggle('dark', nextTheme === 'dark')
-    document.documentElement.style.colorScheme = nextTheme
-  }, [])
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const targets = document.querySelectorAll('.reveal:not(.is-visible), [data-reveal]:not(.is-visible)')
+    if (!targets.length) return
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark'
-    document.documentElement.classList.add('theme-switching')
-    setTheme(nextTheme)
-    localStorage.setItem('bk-theme', nextTheme)
-    document.documentElement.setAttribute('data-theme', nextTheme)
-    document.documentElement.classList.toggle('dark', nextTheme === 'dark')
-    document.documentElement.style.colorScheme = nextTheme
-    requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('theme-switching')))
-  }
+    if (prefersReducedMotion) {
+      targets.forEach((el) => el.classList.add('is-visible'))
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.15 }
+    )
+
+    targets.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [currentPath])
 
   return (
-    <div className="site-shell">
+    <div className="matchday-root site-shell">
       <div className="tactical-backdrop" aria-hidden="true">
         <div className="pitch-grid" />
+        <div className="ambient-glow" />
+        <span className="beam-sweep beam-left" />
+        <span className="beam-sweep beam-right" />
+        <div className="rising-particles">
+          {Array.from({ length: 14 }, (_, i) => (
+            <i key={i} style={{ ['--p' as string]: i + 1 } as React.CSSProperties} />
+          ))}
+        </div>
         <span className="field-node node-one" />
         <span className="field-node node-two" />
         <span className="field-node node-three" />
@@ -48,40 +66,11 @@ export function SiteShell({ children, currentPath }: { children: React.ReactNode
         <span className="field-path path-two" />
       </div>
 
-      <header className="site-header">
-        <Link className="site-brand" href="/" aria-label="Ball Knowledge home">
-          <i className="brand-logo" aria-hidden="true" />
-          <span><b>Ball</b>Knowledge</span>
-        </Link>
+      <HomeHeader currentPath={currentPath} />
 
-        <div className="site-actions">
-          <nav className={`site-nav ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                className={currentPath === item.href ? 'active' : ''}
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <button className="icon-control" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
-            {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
-          <button className="icon-control mobile-menu-button" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle navigation">
-            {menuOpen ? <X size={19} /> : <Menu size={19} />}
-          </button>
-        </div>
-      </header>
+      <main className={fullBleed ? 'site-main site-main--full' : 'site-main'}>{children}</main>
 
-      <main className="site-main">{children}</main>
-
-      <footer className="site-footer">
-        <span>Ball Knowledge</span>
-        <span>Football intelligence in motion</span>
-      </footer>
+      <HomeFooter />
     </div>
   )
 }

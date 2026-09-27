@@ -14,5 +14,8 @@ node_modules
 .next/
 .next-*.log
 .DS_Store
+*.log
+*.pid
+tsconfig.tsbuildinfo
 
 .vercel

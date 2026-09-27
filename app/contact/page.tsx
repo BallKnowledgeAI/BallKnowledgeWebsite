@@ -75,7 +75,7 @@ export default function ContactPage() {
     <SiteShell currentPath="/contact">
       <section className="contact-layout">
         <div className="contact-intro">
-          <span className="section-kicker">OPEN CHANNEL</span>
+          <span className="section-kicker kicker-live">OPEN CHANNEL</span>
           <h1>Talk Tactics <em>With Us</em></h1>
           <p>For prototype testers coaches analysts researchers and collaborators who want to help decode the game</p>
 
@@ -86,7 +86,23 @@ export default function ContactPage() {
             <i className="formation-player fp-two" />
             <i className="formation-player fp-three" />
             <i className="formation-player fp-four" />
+            <i className="contact-formation-travel" aria-hidden="true" />
             <strong>CHANNEL READY</strong>
+          </div>
+
+          <div className="spec-strip" aria-label="Contact response stats">
+            <div className="spec-tile">
+              <strong>2h</strong>
+              <span>Avg reply time</span>
+            </div>
+            <div className="spec-tile">
+              <strong>100%</strong>
+              <span>Human replies</span>
+            </div>
+            <div className="spec-tile">
+              <strong>24/7</strong>
+              <span>Inbox monitored</span>
+            </div>
           </div>
 
           <div className="contact-channel">
@@ -104,7 +120,7 @@ export default function ContactPage() {
           </div>
 
           <div className="contact-links">
-            <Link className="secondary-link contact-feature-link" href="/features">Explore the product system <ArrowUpRight size={16} /></Link>
+            <Link className="matchday-btn matchday-btn-ghost contact-feature-link" href="/features">Explore the product system <ArrowUpRight size={16} /></Link>
             <div className="contact-socials" aria-label="Ball Knowledge social links">
               {socialLinks.map(({ label, href, icon: Icon }) => (
                 <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}>
@@ -115,12 +131,26 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <form className="contact-form" onSubmit={submitContact} noValidate>
+        <form className="contact-form reveal" onSubmit={submitContact} noValidate>
           <span className="form-corner corner-one" aria-hidden="true" />
           <span className="form-corner corner-two" aria-hidden="true" />
           <div className="form-heading">
             <span><i /> CONTACT FORM</span>
             <strong>Send a tactical note</strong>
+          </div>
+
+          <div className="matchday-chips" role="group" aria-label="I'm reaching out as a">
+            {interests.filter((interest) => interest.value).map((interest) => (
+              <button
+                key={interest.value}
+                type="button"
+                aria-pressed={form.interest === interest.value}
+                className={form.interest === interest.value ? 'is-active' : ''}
+                onClick={() => updateField('interest', interest.value)}
+              >
+                {interest.label}
+              </button>
+            ))}
           </div>
 
           <label>

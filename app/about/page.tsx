@@ -1,13 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, Moon, Sun, X } from 'lucide-react'
+import { Instagram, Linkedin, Menu, Moon, Sun, Twitter, X } from 'lucide-react'
+import '@/components/home/home.css'
+
+const socialLinks = [
+  { icon: Linkedin, href: 'https://www.linkedin.com/company/ballknowledge-ai/', label: 'LinkedIn' },
+  { icon: Twitter, href: 'https://x.com/AIBallKnowledge', label: 'X' },
+  { icon: Instagram, href: 'https://www.instagram.com/ballknowledge.ai?igsh=b2V0ZHZuMXFmNXlw', label: 'Instagram' },
+]
 import { useEffect, useRef, useState } from 'react'
 
 type Theme = 'dark' | 'light'
 
 type RevealProps = {
-  children: React.ReactNode
+  children?: React.ReactNode
   delay?: number
   style?: React.CSSProperties
   className?: string
@@ -931,7 +938,7 @@ function ClockVisual({ theme }: { theme: Theme }) {
         ].map((item, index) => (
           <g key={item.label} className="about-clock-label" style={{ animationDelay: `${index * 100}ms` }}>
             <line x1={item.x} y1={item.y} x2={item.x2} y2={item.y2} stroke={colors.clockCircle} strokeWidth="1" pathLength="1" />
-            <text x={item.x} y={item.y} textAnchor={item.anchor} fill={colors.muted} fontFamily="var(--font-dm-sans)" fontSize="8" fontWeight="700">{item.label}</text>
+            <text x={item.x} y={item.y} textAnchor={item.anchor as React.SVGProps<SVGTextElement>['textAnchor']} fill={colors.muted} fontFamily="var(--font-dm-sans)" fontSize="8" fontWeight="700">{item.label}</text>
           </g>
         ))}
       </svg>
@@ -979,6 +986,7 @@ export default function AboutPage() {
 
   return (
     <main
+      className="matchday-root"
       style={{
         position: 'relative',
         minHeight: '100vh',
@@ -990,6 +998,14 @@ export default function AboutPage() {
     >
       <div className="tactical-backdrop" aria-hidden="true">
         <div className="pitch-grid" />
+        <div className="ambient-glow" />
+        <span className="beam-sweep beam-left" />
+        <span className="beam-sweep beam-right" />
+        <div className="rising-particles">
+          {Array.from({ length: 14 }, (_, i) => (
+            <i key={i} style={{ ['--p' as string]: i + 1 } as React.CSSProperties} />
+          ))}
+        </div>
         <span className="field-node node-one" />
         <span className="field-node node-two" />
         <span className="field-node node-three" />
@@ -1000,14 +1016,13 @@ export default function AboutPage() {
       </div>
       <ScrollTimeline theme={theme} />
 
-      <header className="site-header">
-        <Link className="site-brand" href="/" aria-label="Ball Knowledge home">
+      <header className="matchday-header" data-scrolled={menuOpen}>
+        <Link className="site-brand matchday-header-brand" href="/" aria-label="Ball Knowledge home">
           <i className="brand-logo" aria-hidden="true" />
           <span><b>Ball</b>Knowledge</span>
         </Link>
 
-        <div className="site-actions">
-          <nav className={`site-nav ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">
+        <nav className={`matchday-header-nav ${menuOpen ? 'is-open' : ''}`} aria-label="Main navigation">
           {[
             { href: '/', label: 'Home' },
             { href: '/about', label: 'About' },
@@ -1016,23 +1031,26 @@ export default function AboutPage() {
           ].map((item) => (
             <Link
               key={item.href}
-              className={item.href === '/about' ? 'active' : ''}
+              className={item.href === '/about' ? 'is-active' : ''}
               href={item.href}
               onClick={() => setMenuOpen(false)}
             >
               {item.label}
             </Link>
           ))}
-          </nav>
+          <a className="matchday-header-cta" href="/#access" onClick={() => setMenuOpen(false)}>Early access</a>
+        </nav>
+
+        <div className="matchday-header-tools">
           <button
-            className="icon-control"
+            className="matchday-icon-btn"
             type="button"
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           >
-            {theme === 'dark' ? <Moon size={15} /> : <Sun size={15} />}
+            {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
-          <button className="icon-control mobile-menu-button" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle navigation">
+          <button className="matchday-icon-btn matchday-menu-btn" type="button" onClick={() => setMenuOpen((open) => !open)} aria-expanded={menuOpen} aria-label="Toggle navigation">
             {menuOpen ? <X size={19} /> : <Menu size={19} />}
           </button>
         </div>
@@ -1407,6 +1425,27 @@ export default function AboutPage() {
         </div>
       </section>
       </div>
+
+      <footer className="matchday-footer">
+        <Link className="site-brand" href="/" aria-label="Ball Knowledge home">
+          <i className="brand-logo" aria-hidden="true" />
+          <span><b>Ball</b>Knowledge</span>
+        </Link>
+        <nav aria-label="Footer navigation">
+          <Link href="/">Home</Link>
+          <Link href="/about">About</Link>
+          <Link href="/features">Features</Link>
+          <Link href="/contact">Contact</Link>
+        </nav>
+        <div className="matchday-footer-socials">
+          {socialLinks.map(({ icon: Icon, href, label }) => (
+            <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}>
+              <Icon size={18} />
+            </a>
+          ))}
+        </div>
+        <span className="matchday-footer-line">Football intelligence in motion</span>
+      </footer>
     </main>
   )
 }

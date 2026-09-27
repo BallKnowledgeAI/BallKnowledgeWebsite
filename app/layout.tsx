@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Barlow_Condensed, DM_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import '../design-system/tokens.css'
 import './globals.css'
 
 const barlowCondensed = Barlow_Condensed({ 
@@ -19,9 +20,9 @@ export const metadata: Metadata = {
   description: 'Real-time football strategy analysis powered by neural networks and large language models. Tactical intelligence as the game unfolds.',
   generator: 'v0.app',
   icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-    shortcut: '/icon.svg',
-    apple: '/icon.svg',
+    icon: [{ url: '/ballknowledge-mark-dark.png', type: 'image/png' }],
+    shortcut: '/ballknowledge-mark-dark.png',
+    apple: '/ballknowledge-mark-dark.png',
   },
 }
 

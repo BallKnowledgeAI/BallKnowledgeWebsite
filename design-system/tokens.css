@@ -1,0 +1,128 @@
+/*
+ * Ball Knowledge — canonical brand tokens
+ *
+ * Framework-agnostic CSS custom properties. Any Ball Knowledge frontend
+ * module (Next.js site, Vite dashboard, whatever comes next) should import
+ * or paste this file as its single source of color/shape/motion tokens
+ * instead of hand-rolling its own :root block.
+ *
+ * Source of truth: ballknowledge.ai marketing site (app/globals.css).
+ * Tokens marked "new" below were introduced while folding in the
+ * Press & Intensity dashboard's needs and don't have a light-theme value
+ * proven in production yet — treat them as a starting point, not gospel.
+ *
+ * See ../DESIGN_SYSTEM.md Part A for how to use these.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg: #04080F;
+  --surface: #0A1020;
+  --elevated: #101828;
+  --card: rgba(13, 18, 32, 0.72); /* translucent card fill, e.g. dashboard tiles */
+
+  /* Brand blue */
+  --primary: #3BA7F0;
+  --primary-bright: #60BBFF;
+  --primary-glow: rgba(59, 167, 240, 0.18);
+  --primary-dim: rgba(59, 167, 240, 0.06);
+  --deep: #1F3C88;
+  --deep-glow: rgba(31, 60, 136, 0.3);
+  --accent: #00C9FF;
+  --on-primary: #051018;                   /* text/icons sitting on a --primary fill */
+
+  /* Pitch green — secondary brand color, "live / positive / success" signal */
+  --green: #2ECC71;
+  --green-dim: rgba(46, 204, 113, 0.12);
+
+  /* Status tones */
+  --amber: #FFD166;                        /* warning / medium-risk */
+  --amber-dim: rgba(255, 209, 102, 0.12);
+  --danger: #F87171;                       /* error / high-risk */
+  --danger-dim: rgba(248, 113, 113, 0.12);
+
+  /* Text */
+  --text: #F0F6FF;
+  --text-soft: #C7D2E5;   /* secondary text with more presence than --muted */
+  --muted: #8A9AB5;
+
+  /* Borders */
+  --border: rgba(59, 167, 240, 0.14);
+  --border-strong: rgba(59, 167, 240, 0.32);
+
+  /* Tactical-pitch motif (used for background grids/lines on any page that
+     wants the pitch texture) */
+  --pitch-line: rgba(59, 167, 240, 0.14);
+  --pitch-fill: rgba(31, 60, 136, 0.06);
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --pill: 999px;
+
+  /* Motion */
+  --ease: 160ms cubic-bezier(0.16, 1, 0.3, 1);       /* micro-interactions: hover, focus, toggles */
+  --reveal-duration: 700ms;
+  --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);        /* entrance/reveal animations, same curve as --ease */
+  --ease-curve: cubic-bezier(0.16, 1, 0.3, 1);         /* the brand curve on its own, for custom durations */
+  --ease-spring: cubic-bezier(0.2, 1.15, 0.25, 1);     /* slight overshoot: lifts, card entries (from Coach UI) */
+  --motion-click: 80ms;                                /* :active press */
+  --motion-hover: 160ms;                               /* hover, focus, toggle */
+  --motion-card: 250ms;                                /* card, ring and zone reveals */
+  --motion-page: 500ms;                                /* page and route transitions */
+}
+
+/*
+ * Light theme. Apply by setting data-theme="light" on <html> (or your
+ * module's root element) — mirrors the toggle pattern used on the main site.
+ * Tokens without a light value here (none currently) fall back to the dark
+ * value above, matching existing site behavior.
+ */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #EDF3FF;
+  --surface: #FFFFFF;
+  --elevated: #E8F0FD;
+  --card: rgba(255, 255, 255, 0.72);
+
+  --primary: #1F3C88;
+  --primary-bright: #2D52B8;
+  --primary-glow: rgba(31, 60, 136, 0.12);
+  --primary-dim: rgba(31, 60, 136, 0.08);
+  --deep: #3BA7F0;
+  --deep-glow: rgba(59, 167, 240, 0.2);
+  --accent: #0099CC;
+  --on-primary: #FFFFFF;
+
+  --green: #27AE60;
+  --green-dim: rgba(39, 174, 96, 0.09);
+
+  /* proposed — not yet used in production, adjust to taste */
+  --amber: #B8860B;
+  --amber-dim: rgba(184, 134, 11, 0.1);
+  --danger: #DC2626;
+  --danger-dim: rgba(220, 38, 38, 0.1);
+  --text-soft: #33415C;
+  --border-strong: rgba(31, 60, 136, 0.32);
+
+  --text: #08101E;
+  --muted: #4A5568;
+  --border: rgba(31, 60, 136, 0.15);
+
+  --pitch-line: rgba(31, 60, 136, 0.18);
+  --pitch-fill: rgba(31, 60, 136, 0.05);
+}
+
+/* Disable transitions for one frame while JS toggles data-theme, to avoid a
+   flash of animated color-fade across every element at once. Toggle logic
+   should add/remove this class on <html> around the theme switch. */
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
